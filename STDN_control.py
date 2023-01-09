@@ -41,7 +41,6 @@ parser.add_argument('--model_name', type=str, default='stdn',
 args = parser.parse_args()
 # print(args)
 
-
 class CustomStopper(keras.callbacks.EarlyStopping):
     # add argument for starting epoch
     def __init__(self, monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto', start_epoch=40):
@@ -95,6 +94,8 @@ def main(batch_size=64, max_epochs=100, validation_split=0.2, early_stop=EarlySt
     modeler = models.models()
 
     if args.model_name == "stdn":
+
+        tf.keras.backend.clear_session()
         # training
         att_cnnx, att_flow, att_x, cnnx, flow, x, y = sampler.sample_stdn(datatype="train",
                                                                           att_lstm_num=args.att_lstm_num, \
@@ -155,8 +156,9 @@ def get_fitness(indi, batch_size = 64, max_epochs = 3, validation_split = 0.2, e
 
     if args.model_name == "stdn":
         # training
-
+        tf.keras.backend.clear_session()
         print("Now try to training sample.")
+        
         att_cnnx, att_flow, att_x, cnnx, flow, x, y = sampler.sample_stdn(datatype = "train",
                                                                           att_lstm_num = indi.arg_list[0], \
                                                                           long_term_lstm_seq_len = indi.arg_list[1],
@@ -202,6 +204,7 @@ def get_fitness(indi, batch_size = 64, max_epochs = 3, validation_split = 0.2, e
         model.save(model_hdf5_path + args.model_name + currTime + argument_list + ".hdf5")
 
         del att_cnnx, att_flow, att_x, cnnx, flow, x, y
+        tf.keras.backend.clear_session()
         del model
         gc.collect()
 
@@ -230,6 +233,7 @@ def get_final_output(indi, batch_size = 64, max_epochs = 100, validation_split =
     modeler = models.models()
 
     if args.model_name == "stdn":
+        tf.keras.backend.clear_session()
         # training
         att_cnnx, att_flow, att_x, cnnx, flow, x, y = sampler.sample_stdn(datatype = "train",
                                                                           att_lstm_num = indi.arg_list[0], \
@@ -268,6 +272,7 @@ def get_final_output(indi, batch_size = 64, max_epochs = 100, validation_split =
         model.save(model_hdf5_path + args.model_name + currTime + argument_list + "_final" + ".hdf5")
 
         del att_cnnx, att_flow, att_x, cnnx, flow, x, y
+        tf.keras.backend.clear_session()
         del model
         gc.collect()
 

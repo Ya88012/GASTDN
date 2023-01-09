@@ -135,6 +135,8 @@ class models:
         inputs = flatten_att_nbhd_inputs + flatten_att_flow_inputs + att_lstm_inputs + nbhd_inputs + flow_inputs + [lstm_inputs,]
         # print("Model input length: {0}".format(len(inputs)))
         # ipdb.set_trace()
+
+        # tf.keras.backend.clear_session()
         model = Model(inputs = inputs, outputs = pred_volume)
         model.compile(optimizer = optimizer, loss = loss, metrics=metrics)
         return model
