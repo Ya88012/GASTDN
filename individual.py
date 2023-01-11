@@ -13,11 +13,11 @@ class Individual:
         self.fitness = -1.0
         self.arg_list = []
 
-        self.att_lstm_num_range = [1, 6]
-        self.long_term_lstm_seq_len_range = [1, 6]
+        self.att_lstm_num_range = [1, 4]
+        self.long_term_lstm_seq_len_range = [1, 8]
         self.short_term_lstm_seq_len_range = [1, 8]
-        self.nbhd_size_range = [1, 4]
-        self.cnn_nbhd_size_range = [1, 4]
+        self.nbhd_size_range = [0, 4]
+        self.cnn_nbhd_size_range = [0, 4]
 
     def initialize(self):
         init_att_lstm_num = np.random.randint(self.att_lstm_num_range[0], self.att_lstm_num_range[1])
@@ -194,7 +194,7 @@ class Individual:
 
 if __name__ == '__main__':
     i = Individual()
-    i.initialize_spec([1, 5, 7, 0, 0])
+    i.initialize_spec([3, 7, 7, 3, 3])
     from evaluate import *
     update_individual_fitness(i)
     print("Test finish")

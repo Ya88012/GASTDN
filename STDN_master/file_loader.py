@@ -2,6 +2,8 @@ import numpy as np
 import pickle
 import json
 from pathlib import Path
+import psutil
+import gc
 
 class file_loader:
     def __init__(self, config_path = "STDN_master/data.json"):
@@ -11,7 +13,6 @@ class file_loader:
         self.threshold = int(self.config["threshold"])
         self.isVolumeLoaded = False
         self.isFlowLoaded = False
-
 
     def load_flow(self):
         self.flow_train = np.load(open(self.config["flow_train"], "rb"))["flow"] / self.config["flow_train_max"]
@@ -97,9 +98,14 @@ class file_loader:
         for t in range(time_start, time_end):
             if t%100 == 0:
                 print("Now sampling at {0} timeslots.".format(t))
+            if t % 50 == 0:
+                print('Do gc.collect().')
+                gc.collect()
+            # print("Now sampling at {0} timeslots.".format(t))
+            # print('RAM memory % used:', psutil.virtual_memory()[2])
+            # print('RAM Used (GB):', psutil.virtual_memory()[3]/1000000000)
             for x in range(data.shape[1]):
                 for y in range(data.shape[2]):
-                    
                     #sample common (short-term) lstm
                     short_term_lstm_samples = []
                     for seqn in range(short_term_lstm_seq_len):
@@ -107,7 +113,7 @@ class file_loader:
                         real_t = t - (short_term_lstm_seq_len - seqn)
 
                         #cnn features, zero_padding
-                        cnn_feature = np.zeros((2*cnn_nbhd_size+1, 2*cnn_nbhd_size+1, volume_type))
+                        cnn_feature = np.zeros((2*cnn_nbhd_size+1, 2*cnn_nbhd_size+1, volume_type), dtype = 'float32')
                         #actual idx in data
                         for cnn_nbhd_x in range(x - cnn_nbhd_size, x + cnn_nbhd_size + 1):
                             for cnn_nbhd_y in range(y - cnn_nbhd_size, y + cnn_nbhd_size + 1):
@@ -125,14 +131,14 @@ class file_loader:
                         #real_t - 1 is the time for in flow in longflow1
                         flow_feature_curr_in_from_last = flow_data[1, real_t - 1, :, :, x, y]
 
-                        flow_feature = np.zeros(flow_feature_curr_in.shape+(4,))
+                        flow_feature = np.zeros(flow_feature_curr_in.shape+(4,), dtype = 'float32')
                         
                         flow_feature[:, :, 0] = flow_feature_curr_out
                         flow_feature[:, :, 1] = flow_feature_curr_in
                         flow_feature[:, :, 2] = flow_feature_last_out_to_curr
                         flow_feature[:, :, 3] = flow_feature_curr_in_from_last
                         #calculate local flow, same shape cnn
-                        local_flow_feature = np.zeros((2*cnn_nbhd_size+1, 2*cnn_nbhd_size+1, 4))
+                        local_flow_feature = np.zeros((2*cnn_nbhd_size+1, 2*cnn_nbhd_size+1, 4), dtype = 'float32')
                         #actual idx in data
                         for cnn_nbhd_x in range(x - cnn_nbhd_size, x + cnn_nbhd_size + 1):
                             for cnn_nbhd_y in range(y - cnn_nbhd_size, y + cnn_nbhd_size + 1):
@@ -145,7 +151,7 @@ class file_loader:
 
                         #lstm features
                         # nbhd feature, zero_padding
-                        nbhd_feature = np.zeros((2*nbhd_size+1, 2*nbhd_size+1, volume_type))
+                        nbhd_feature = np.zeros((2*nbhd_size+1, 2*nbhd_size+1, volume_type), dtype = 'float32')
                         #actual idx in data
                         for nbhd_x in range(x - nbhd_size, x + nbhd_size + 1):
                             for nbhd_y in range(y - nbhd_size, y + nbhd_size + 1):
@@ -166,7 +172,7 @@ class file_loader:
                         feature_vec = np.concatenate((feature_vec, nbhd_feature))
 
                         short_term_lstm_samples.append(feature_vec)
-                    short_term_lstm_features.append(np.array(short_term_lstm_samples))
+                    short_term_lstm_features.append(np.array(short_term_lstm_samples, dtype = 'float32'))
 
                     #sample att-lstms
                     for att_lstm_cnt in range(att_lstm_num):
@@ -185,7 +191,7 @@ class file_loader:
                             real_t = att_t - (long_term_lstm_seq_len - seqn)
 
                             #cnn features, zero_padding
-                            cnn_feature = np.zeros((2*cnn_nbhd_size+1, 2*cnn_nbhd_size+1, volume_type))
+                            cnn_feature = np.zeros((2*cnn_nbhd_size+1, 2*cnn_nbhd_size+1, volume_type), dtype = 'float32')
                             #actual idx in data
                             for cnn_nbhd_x in range(x - cnn_nbhd_size, x + cnn_nbhd_size + 1):
                                 for cnn_nbhd_y in range(y - cnn_nbhd_size, y + cnn_nbhd_size + 1):
@@ -204,14 +210,14 @@ class file_loader:
                             #real_t - 1 is the time for in flow in longflow1
                             flow_feature_curr_in_from_last = flow_data[1, real_t - 1, :, :, x, y]
 
-                            flow_feature = np.zeros(flow_feature_curr_in.shape+(4,))
+                            flow_feature = np.zeros(flow_feature_curr_in.shape+(4,), dtype = 'float32')
                             
                             flow_feature[:, :, 0] = flow_feature_curr_out
                             flow_feature[:, :, 1] = flow_feature_curr_in
                             flow_feature[:, :, 2] = flow_feature_last_out_to_curr
                             flow_feature[:, :, 3] = flow_feature_curr_in_from_last
                             #calculate local flow, same shape cnn
-                            local_flow_feature = np.zeros((2*cnn_nbhd_size+1, 2*cnn_nbhd_size+1, 4))
+                            local_flow_feature = np.zeros((2*cnn_nbhd_size+1, 2*cnn_nbhd_size+1, 4), dtype = 'float32')
                             #actual idx in data
                             for cnn_nbhd_x in range(x - cnn_nbhd_size, x + cnn_nbhd_size + 1):
                                 for cnn_nbhd_y in range(y - cnn_nbhd_size, y + cnn_nbhd_size + 1):
@@ -224,7 +230,7 @@ class file_loader:
 
                             #att-lstm features
                             # nbhd feature, zero_padding
-                            nbhd_feature = np.zeros((2*nbhd_size+1, 2*nbhd_size+1, volume_type))
+                            nbhd_feature = np.zeros((2*nbhd_size+1, 2*nbhd_size+1, volume_type), dtype = 'float32')
                             #actual idx in data
                             for nbhd_x in range(x - nbhd_size, x + nbhd_size + 1):
                                 for nbhd_y in range(y - nbhd_size, y + nbhd_size + 1):
@@ -245,7 +251,7 @@ class file_loader:
                             feature_vec = np.concatenate((feature_vec, nbhd_feature))
 
                             long_term_lstm_samples.append(feature_vec)
-                        lstm_att_features[att_lstm_cnt].append(np.array(long_term_lstm_samples))
+                        lstm_att_features[att_lstm_cnt].append(np.array(long_term_lstm_samples, dtype = 'float32'))
 
                     #label
                     labels.append(data[t, x , y, :].flatten())
@@ -254,34 +260,34 @@ class file_loader:
         output_cnn_att_features = []
         output_flow_att_features = []
         for i in range(att_lstm_num):
-            lstm_att_features[i] = np.array(lstm_att_features[i])
+            lstm_att_features[i] = np.array(lstm_att_features[i], dtype = 'float32')
             for j in range(long_term_lstm_seq_len):
-                cnn_att_features[i][j] = np.array(cnn_att_features[i][j])
-                flow_att_features[i][j] = np.array(flow_att_features[i][j])
+                cnn_att_features[i][j] = np.array(cnn_att_features[i][j], dtype = 'float32')
+                flow_att_features[i][j] = np.array(flow_att_features[i][j], dtype = 'float32')
                 output_cnn_att_features.append(cnn_att_features[i][j])
                 output_flow_att_features.append(flow_att_features[i][j])
         
         for i in range(short_term_lstm_seq_len):
-            cnn_features[i] = np.array(cnn_features[i])
-            flow_features[i] = np.array(flow_features[i])
-        short_term_lstm_features = np.array(short_term_lstm_features)
-        labels = np.array(labels)
+            cnn_features[i] = np.array(cnn_features[i], dtype = 'float32')
+            flow_features[i] = np.array(flow_features[i], dtype = 'float32')
+        short_term_lstm_features = np.array(short_term_lstm_features, dtype = 'float32')
+        labels = np.array(labels, dtype = 'float32')
 
-        print('type(output_cnn_att_features):', type(output_cnn_att_features))
-        print('type(output_flow_att_features):', type(output_flow_att_features))
-        print('type(lstm_att_features):', type(lstm_att_features))
-        print('type(cnn_features):', type(cnn_features))
-        print('type(flow_features):', type(flow_features))
-        print('type(short_term_lstm_features):', type(short_term_lstm_features))
-        print('type(labels):', type(labels))
+        # print('type(output_cnn_att_features):', type(output_cnn_att_features))
+        # print('type(output_flow_att_features):', type(output_flow_att_features))
+        # print('type(lstm_att_features):', type(lstm_att_features))
+        # print('type(cnn_features):', type(cnn_features))
+        # print('type(flow_features):', type(flow_features))
+        # print('type(short_term_lstm_features):', type(short_term_lstm_features))
+        # print('type(labels):', type(labels))
 
-        # Path(folder_name).mkdir(parents = True, exist_ok = True)
-        # np.save(folder_name + '/output_cnn_att_features.npy', np.array(output_cnn_att_features))
-        # np.save(folder_name + '/output_flow_att_features.npy', np.array(output_flow_att_features))
-        # np.save(folder_name + '/lstm_att_features.npy', lstm_att_features)
-        # np.save(folder_name + '/cnn_features.npy', cnn_features)
-        # np.save(folder_name + '/flow_features.npy', flow_features)
-        # np.save(folder_name + '/short_term_lstm_features.npy', short_term_lstm_features)
-        # np.save(folder_name + '/labels.npy', labels)
+        Path(folder_name).mkdir(parents = True, exist_ok = True)
+        np.save(folder_name + '/output_cnn_att_features.npy', np.array(output_cnn_att_features, dtype = 'float32'))
+        np.save(folder_name + '/output_flow_att_features.npy', np.array(output_flow_att_features, dtype = 'float32'))
+        np.save(folder_name + '/lstm_att_features.npy', lstm_att_features)
+        np.save(folder_name + '/cnn_features.npy', cnn_features)
+        np.save(folder_name + '/flow_features.npy', flow_features)
+        np.save(folder_name + '/short_term_lstm_features.npy', short_term_lstm_features)
+        np.save(folder_name + '/labels.npy', labels)
 
         return output_cnn_att_features, output_flow_att_features, lstm_att_features, cnn_features, flow_features, short_term_lstm_features, labels

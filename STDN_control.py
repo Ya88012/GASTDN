@@ -214,7 +214,7 @@ def get_fitness(indi, batch_size = 64, max_epochs = 3, validation_split = 0.2, e
         print("Cannot recognize parameter...")
         return ((-1.0, -1.0), (-1.0, -1.0))
 
-def get_final_output(indi, batch_size = 64, max_epochs = 100, validation_split = 0.2, early_stop = EarlyStopping()):
+def get_final_output(indi, batch_size = 64, max_epochs = 1000, validation_split = 0.2, early_stop = EarlyStopping()):
     model_hdf5_path = "./hdf5s/"
 
     print('Now trying to get indi.arg_list fitness:', indi.arg_list)
