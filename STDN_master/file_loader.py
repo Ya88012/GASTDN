@@ -281,13 +281,13 @@ class file_loader:
         # print('type(short_term_lstm_features):', type(short_term_lstm_features))
         # print('type(labels):', type(labels))
 
-        Path(folder_name).mkdir(parents = True, exist_ok = True)
-        np.save(folder_name + '/output_cnn_att_features.npy', np.array(output_cnn_att_features, dtype = 'float32'))
-        np.save(folder_name + '/output_flow_att_features.npy', np.array(output_flow_att_features, dtype = 'float32'))
-        np.save(folder_name + '/lstm_att_features.npy', lstm_att_features)
-        np.save(folder_name + '/cnn_features.npy', cnn_features)
-        np.save(folder_name + '/flow_features.npy', flow_features)
-        np.save(folder_name + '/short_term_lstm_features.npy', short_term_lstm_features)
-        np.save(folder_name + '/labels.npy', labels)
+        # Path(folder_name).mkdir(parents = True, exist_ok = True)
+        # np.save(folder_name + '/output_cnn_att_features.npy', np.array(output_cnn_att_features, dtype = 'float32'))
+        # np.save(folder_name + '/output_flow_att_features.npy', np.array(output_flow_att_features, dtype = 'float32'))
+        # np.save(folder_name + '/lstm_att_features.npy', lstm_att_features)
+        # np.save(folder_name + '/cnn_features.npy', cnn_features)
+        # np.save(folder_name + '/flow_features.npy', flow_features)
+        # np.save(folder_name + '/short_term_lstm_features.npy', short_term_lstm_features)
+        # np.save(folder_name + '/labels.npy', labels)
 
         return output_cnn_att_features, output_flow_att_features, lstm_att_features, cnn_features, flow_features, short_term_lstm_features, labels
