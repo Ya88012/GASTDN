@@ -27,6 +27,7 @@ class Hyper_STDN:
         parse_population(self.pops)
         update_population_fitness(self.pops)
         save_populations(gen_no = gen_no, pops = self.pops)
+
         print('gen_no:', gen_no)
         print(self.pops)
 

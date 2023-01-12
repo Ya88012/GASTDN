@@ -194,7 +194,8 @@ class Individual:
 
 if __name__ == '__main__':
     i = Individual()
-    i.initialize_spec([3, 7, 7, 3, 3])
+    # i.initialize_spec([3, 7, 7, 3, 3])
+    i.initialize_spec([2, 3, 5, 1, 1])
     from evaluate import *
     update_individual_fitness(i)
     print("Test finish")

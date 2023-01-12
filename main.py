@@ -17,6 +17,7 @@ def begin_hyper_evolve(crossover_prob = 0.8, mutation_prob = 0.2, population_siz
 
     final_indi = H.get_best_individual()
 
+    print('-' * 10)
     print('final_indi.fitness:', final_indi.fitness)
     print('final_indi.arg_list:', final_indi.arg_list)
     print("att_lstm_num:", final_indi.arg_list[0])
@@ -28,6 +29,7 @@ def begin_hyper_evolve(crossover_prob = 0.8, mutation_prob = 0.2, population_siz
     print(
         "Test on model {0}:\npickup rmse = {1}, pickup mape = {2}%\ndropoff rmse = {3}, dropoff mape = {4}%".format(
             'stdn', prmse, pmape * 100, drmse, dmape * 100))
+    print('-' * 10)
     
 # def begin_S_hyper_evolve(crossover_prob = 0.8, mutation_prob = 0.2, population_size = 10, total_generation_number = 10, initial_temp = 1, cooling_ratio = 0.9):
 #     S = S_Hyper_STDN(crossover_prob, mutation_prob, population_size, initial_temp, cooling_ratio)

@@ -256,7 +256,11 @@ def get_final_output(indi, batch_size = 64, max_epochs = 1000, validation_split 
         del att_cnnx, att_flow, att_x, cnnx, flow, x, y
         gc.collect()
 
-        att_cnnx, att_flow, att_x, cnnx, flow, x, y = sampler.sample_stdn(datatype = "test", nbhd_size = indi.arg_list[3],
+        att_cnnx, att_flow, att_x, cnnx, flow, x, y = sampler.sample_stdn(datatype = "test", 
+                                                                          att_lstm_num = indi.arg_list[0], \
+                                                                          long_term_lstm_seq_len = indi.arg_list[1],
+                                                                          short_term_lstm_seq_len = indi.arg_list[2], \
+                                                                          nbhd_size = indi.arg_list[3],
                                                                           cnn_nbhd_size = indi.arg_list[4])
         y_pred = model.predict( \
             x = att_cnnx + att_flow + att_x + cnnx + flow + [x, ], )

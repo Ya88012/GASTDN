@@ -99,7 +99,7 @@ class file_loader:
             if t%100 == 0:
                 print("Now sampling at {0} timeslots.".format(t))
             if t % 50 == 0:
-                print('Do gc.collect().')
+                # print('Do gc.collect().')
                 gc.collect()
             # print("Now sampling at {0} timeslots.".format(t))
             # print('RAM memory % used:', psutil.virtual_memory()[2])

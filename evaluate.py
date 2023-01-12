@@ -42,4 +42,5 @@ def update_individual_fitness(indi):
     (prmse, pmape), (drmse, dmape) = get_fitness(indi)
     indi.fitness = 100 - (pmape + dmape) / 2
     # indi.fitness = np.random.randint(low = 0, high = 100)
+    print('indi.arg_list:', indi.arg_list)
     print('indi_fitness:', indi.fitness)
